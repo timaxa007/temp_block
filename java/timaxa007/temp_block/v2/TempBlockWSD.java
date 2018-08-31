@@ -30,7 +30,6 @@ public class TempBlockWSD extends WorldSavedData {
 			for (int j = 0; j < tbc.tempBlock.size(); ++j) {
 				TempBlock tb = tbc.tempBlock.get(j);
 				if (world.getTotalWorldTime() >= tb.time) {
-					System.out.println(((tbc.chunkX * 16) + (tb.xz & 0b1111)) + " - " + tb.y + " - " + ((tbc.chunkZ * 16) + ((tb.xz >> 4) & 0b1111)));
 					world.func_147480_a((tbc.chunkX * 16) + (tb.xz & 0b1111), tb.y, (tbc.chunkZ * 16) + ((tb.xz >> 4) & 0b1111), false);
 					tbc.tempBlock.remove(j--);
 				}

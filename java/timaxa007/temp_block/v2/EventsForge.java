@@ -13,7 +13,6 @@ public class EventsForge {
 		TempBlockWSD tempBlock = TempBlockWSD.get(event.world);
 		if (tempBlock == null) return;
 		if (event.block == Blocks.lit_furnace) {
-			System.out.println(event.x + " - " + event.y + " - " + event.z);
 			tempBlock.removingTempBlock(event.x, event.y, event.z, event.world.getTotalWorldTime() + 60L);
 		}
 	}
