@@ -1,7 +1,7 @@
 package timaxa007.temp_block.v1;
 
 public class TempBlock {
-	
+
 	public final int x, y, z;
 	public final long time;
 
@@ -11,5 +11,5 @@ public class TempBlock {
 		this.z = z;
 		this.time = time;
 	}
-	
+
 }

@@ -1,4 +1,4 @@
-package timaxa007.temp_block.v1;
+package timaxa007.temp_block.v2;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
