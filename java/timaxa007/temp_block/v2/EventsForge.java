@@ -10,10 +10,32 @@ public class EventsForge {
 
 	@SubscribeEvent
 	public void blockPlace(BlockEvent.PlaceEvent event) {
+		if (event.player.capabilities.isCreativeMode) return;
 		TempBlockWSD tempBlock = TempBlockWSD.get(event.world);
 		if (tempBlock == null) return;
 		if (event.block == Blocks.lit_furnace) {
 			tempBlock.removingTempBlock(event.x, event.y, event.z, event.world.getTotalWorldTime() + 60L);
+		}
+	}
+
+	@SubscribeEvent
+	public void blockBreak(BlockEvent.BreakEvent event) {
+		TempBlockWSD tempBlock = TempBlockWSD.get(event.world);
+		if (tempBlock == null) return;
+		if (tempBlock.chunkLoad.isEmpty()) return;
+
+		for (int i = 0; i < tempBlock.chunkLoad.size(); ++i) {
+			TempBlockChunk tbc = tempBlock.chunkLoad.get(i);
+			if (tbc.tempBlock.isEmpty()) continue;
+			for (int j = 0; j < tbc.tempBlock.size(); ++j) {
+				TempBlock tb = tbc.tempBlock.get(j);
+				if (tb.x == event.x && tb.y == event.y && tb.z == event.z) 
+					tbc.tempBlock.remove(j--);
+			}
+			if (tbc.tempBlock.isEmpty()) {
+				tbc.tempBlock.clear();
+				tbc.tempBlock.trimToSize();
+			}
 		}
 	}
 

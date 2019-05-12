@@ -30,7 +30,7 @@ public class TempBlockWSD extends WorldSavedData {
 			for (int j = 0; j < tbc.tempBlock.size(); ++j) {
 				TempBlock tb = tbc.tempBlock.get(j);
 				if (world.getTotalWorldTime() >= tb.time) {
-					world.func_147480_a((tbc.chunkX * 16) + (tb.xz & 0b1111), tb.y, (tbc.chunkZ * 16) + ((tb.xz >> 4) & 0b1111), false);
+					world.func_147480_a(tb.x, tb.y, tb.z, false);
 					tbc.tempBlock.remove(j--);
 				}
 			}
@@ -69,7 +69,7 @@ public class TempBlockWSD extends WorldSavedData {
 		if (tbc == null)
 			tbc = new TempBlockChunk(chunkX, chunkZ);
 
-		tbc.tempBlock.add(new TempBlock((byte)((z % 16) << 4 | (x % 16)), y, time));
+		tbc.tempBlock.add(new TempBlock(x, y, z, time));
 
 		if (world.getChunkProvider().chunkExists(chunkX, chunkZ))
 			chunkLoad.add(tbc); else chunkUnload.add(tbc);
@@ -125,7 +125,11 @@ public class TempBlockWSD extends WorldSavedData {
 			NBTTagCompound tagcomp2;
 			for (int j = 0; j < list2.tagCount(); ++j) {
 				tagcomp2 = list2.getCompoundTagAt(j);
-				tbc.tempBlock.add(new TempBlock(tagcomp2.getByte("xz"), tagcomp2.getInteger("y"), tagcomp2.getLong("time")));
+				tbc.tempBlock.add(new TempBlock(
+						tbc.chunkX + tagcomp2.getByte("x"),
+						tagcomp2.getInteger("y"),
+						tbc.chunkZ + tagcomp2.getByte("z"),
+						tagcomp2.getLong("time")));
 			}
 			chunkUnload.add(tbc);
 		}
@@ -140,44 +144,14 @@ public class TempBlockWSD extends WorldSavedData {
 			for (int i = 0; i < chunkLoad.size(); ++i) {
 				TempBlockChunk tbc = chunkLoad.get(i);
 				if (tbc.tempBlock.isEmpty()) continue;
-				tagcomp = new NBTTagCompound();
-				tagcomp.setInteger("cX", tbc.chunkX);
-				tagcomp.setInteger("cZ", tbc.chunkZ);
-
-				NBTTagList list2 = new NBTTagList();
-				NBTTagCompound tagcomp2;
-				for (int j = 0; j < tbc.tempBlock.size(); ++j) {
-					TempBlock tb = tbc.tempBlock.get(j);
-					tagcomp2 = new NBTTagCompound();
-					tagcomp2.setByte("xz", tb.xz);
-					tagcomp2.setInteger("y", tb.y);
-					tagcomp2.setLong("time", tb.time);
-					list2.appendTag(tagcomp2);
-				}
-				if (list2.tagCount() > 0) tagcomp.setTag("tb", list2);
-				list.appendTag(tagcomp);
+				list.appendTag(tbc.writeToNBT(new NBTTagCompound()));
 			}
 
 		if (!chunkUnload.isEmpty())
 			for (int i = 0; i < chunkUnload.size(); ++i) {
 				TempBlockChunk tbc = chunkUnload.get(i);
 				if (tbc.tempBlock.isEmpty()) continue;
-				tagcomp = new NBTTagCompound();
-				tagcomp.setInteger("cX", tbc.chunkX);
-				tagcomp.setInteger("cZ", tbc.chunkZ);
-
-				NBTTagList list2 = new NBTTagList();
-				NBTTagCompound tagcomp2;
-				for (int j = 0; j < tbc.tempBlock.size(); ++j) {
-					TempBlock tb = tbc.tempBlock.get(j);
-					tagcomp2 = new NBTTagCompound();
-					tagcomp2.setByte("xz", tb.xz);
-					tagcomp2.setInteger("y", tb.y);
-					tagcomp2.setLong("time", tb.time);
-					list2.appendTag(tagcomp2);
-				}
-				if (list2.tagCount() > 0) tagcomp.setTag("tb", list2);
-				list.appendTag(tagcomp);
+				list.appendTag(tbc.writeToNBT(new NBTTagCompound()));
 			}
 
 		if (list.tagCount() > 0) nbt.setTag("tbc", list);
